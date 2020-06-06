@@ -3,6 +3,16 @@ import pickle  # Модуль для сериализации данных
 from prettytable import PrettyTable  # Модуль для красивого вывода контактов
 
 
+# проверка строки на пустоту
+def is_empty(prop):
+    while True:
+        if not prop:
+            print('Поле не может быть пустым')
+            prop = input('Введите валидные данные: ')
+        else:
+            break
+
+
 # класс, отвечающий за действия внутри одного контакта
 class Contact:
 
@@ -13,11 +23,11 @@ class Contact:
         self.number = number
 
     # Функции относящиеся к изменению данных внутри самого контакта
-    def rename(self): self.name = input(f'Введите новое имя контакту {self.name}: ')
+    def rename(self): self.name = input(f'Введите новое имя контакту. Текущее - {self.name}: ')
 
-    def change_mail(self): self.email = input(f'Введите новую почту для контакта {self.name}: ')
+    def change_mail(self): self.email = input(f'Введите новую почту для контакта. Текущая - {self.email}: ')
 
-    def change_number(self): self.number = input(f'Введите новый номер для контакта {self.name}: ')
+    def change_number(self): self.number = input(f'Введите новый номер для контакта. Текущий - {self.number}: ')
 
 
 # класс, отвечающий за действия со списком контактов
@@ -39,19 +49,43 @@ class Contacts(list):
 
     # вывод контактов в виде таблицы с помощью модуля prettytable
     def show_contacts(self):
-        th = ['Имя', 'Номер', 'Почта']  # инициализация столбцов
-        table = PrettyTable(th)  # создание таблицы
-        # добавление данных в таблицу и вывод
-        for contact in self:
-            table.add_row([contact.name, contact.number, contact.email])
-        print(table)
+        if not len(self) > 0:
+            print('В вашем списке еще нет контактов. Для начала создайте парочку.')
+        else:
+            th = ['Имя', 'Номер', 'Почта']  # инициализация столбцов
+            table = PrettyTable(th)  # создание таблицы
+            # добавление данных в таблицу и вывод
+            for contact in self:
+                table.add_row([contact.name, contact.number, contact.email])
+            print(table)
 
     # добавление контакта в список с последующим сохранением в файл
     def add(self):
-        # если имя, почта или номер не введены, пустая строка заменяется на '-' ( прочерк )
-        name = input('Введите имя контакта: ') or '-'
-        email = input('Введите почту контакта: ') or '-'
-        number = input('Введите номер контакта: ') or '-'
+        # проверки на валидность введенных данных
+        name = input('Введите имя контакта: ')
+        is_empty(name)
+        while True:
+            if not name.isalpha():
+                print('Имя не должно содержать специальных символов, пробелов или цифр')
+                name = input('Введите валидные данные: ')
+            else:
+                break
+        email = input('Введите почту контакта: ')
+        is_empty(email)
+        while True:
+            if '@' not in email:
+                print('Почта должна содержать в себе символ собаки')
+                email = input('Введите правильную почту: ')
+            else:
+                break
+        number = input('Введите номер контакта: ')
+        is_empty(number)
+        while True:
+            if not number.isdecimal():
+                print('Номер должен состоять только из цифр')
+                number = input('Введите корректный номер: ')
+            else:
+                break
         new_contact = Contact(name, email, number)
         # self в данном случае типа list, так как мы от него наследуемся, поэтому он может использовать методы списка здесь и далее
         self.append(new_contact)
@@ -71,38 +105,37 @@ class Contacts(list):
         if not removed:
             print('Контакта с таким именем не найдено')
 
-    # переименование контакта: ищет в списке контакт с данным именем и вызывает у объекта подходящего контакта метод rename
-    def contacts_rename(self):
-        contact_name = input('Введите имя контакта, который хотите переименовать: ')
-        renamed = False
-        for contact in self:
-            if contact.name == contact_name:
-                renamed = True
-                contact.rename()
-        if not renamed:
-            print('Нет контакта с таким именем. Попробуйте снова')
-
-    # смена номера у контакта
-    def contacts_change_number(self):
-        contact_name = input('Введите имя контакта, у которого хотите изменить номер: ')
-        number_changed = False
-        for contact in self:
-            if contact.name == contact_name:
-                number_changed = True
-                contact.change_number()
-        if not number_changed:
-            print('Нет контакта с таким именем. Попробуйте снова')
-
-    # смена почты у контакта, аналогично предыдущим двум методам
-    def contacts_change_mail(self):
-        contact_name = input('Введите имя контакта, у которого хотите изменить почту: ')
-        mail_changed = False
-        for contact in self:
-            if contact.name == contact_name:
-                mail_changed = True
-                contact.change_mail()
-        if not mail_changed:
-            print('Нет контакта с таким именем. Попробуйте снова')
+    # вы выбираете контакт и можете совершать с ним различные манипуляции ( переименовать, сменить номер или сменить почту)
+    def select_contact(self):
+        print('Choose contact to act with it')
+        if not len(self) > 0:
+            print('В вашем списке еще нет контактов. Для начала создайте парочку.')
+        else:
+            i = 1
+            for contact in self:
+                print(f'{i} - {contact.name}')
+                i += 1
+            selected_contact = self[int(input('Введите индекс контакта ( указан перед именем ): ')) - 1]
+            print(f'Выбран контакт {selected_contact.name}')
+            while True:
+                action = input('Введите номер действия, которое вы хотите совершить с контактом: \n'
+                               '1 - Переименовать\n'
+                               '2 - Сменить почту\n'
+                               '3 - Сменить номер\n'
+                               '4 - Назад\n==> ')
+                if action == '4':
+                    break
+                elif action == '1':
+                    selected_contact.rename()
+                    self.save()
+                elif action == '2':
+                    selected_contact.change_mail()
+                    self.save()
+                elif action == '3':
+                    selected_contact.change_number()
+                    self.save()
+                else:
+                    print('Нет такой команды. Попробуйте снова или вернитесь назад введя "4"')
 
 
 # создаем инстанцию класса методом выгрузки данных из файла, если данных нет, создается пустой массив контактов
@@ -111,15 +144,12 @@ contacts = Contacts.load()
 # словарь команд для упрощения дальнейшей работы с ними. Ключ - команда, значение - функция, которую она выполняет
 commands = {
     'help': lambda: print('Чтобы воспользоваться командой введите ее порядковый номер\n1.Показать '
-                          'контакты\n2.Добавить контакт\n3.Удалить контакт\n4.Переименовать контакт\n5.Изменить номер '
-                          'у контакта\n6.Изменить почту у контакта\nЧтобы завершить '
+                          'контакты\n2.Добавить контакт\n3.Удалить контакт\n4.Выбрать контакт\nЧтобы завершить '
                           'сессию напишите "end"'),
     '1': contacts.show_contacts,
     '2': contacts.add,
     '3': contacts.del_contact,
-    '4': contacts.contacts_rename,
-    '5': contacts.contacts_change_number,
-    '6': contacts.contacts_change_mail
+    '4': contacts.select_contact
 }
 
 # первичное ознакомление пользователя с командами
