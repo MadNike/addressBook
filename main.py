@@ -26,11 +26,41 @@ class Contact:
     # Функции относящиеся к изменению данных внутри самого контакта
     def rename(self):
         self.name = input(f'Введите новое имя контакту. Текущее - {self.name}: ')
+        is_empty(self.name)
+        while True:
+            if not self.name.isalpha():
+                print('Имя не должно содержать специальных символов, пробелов или цифр')
+                self.name = input('Введите валидные данные: ')
+            else:
+                break
         self.last_name = input(f'Введите новую фамилию контакту. Текущяя - {self.last_name}: ')
+        is_empty(self.last_name)
+        while True:
+            if not self.last_name.isalpha():
+                print('Фамилия не должна содержать специальных символов, пробелов или цифр')
+                self.last_name = input('Введите валидные данные: ')
+            else:
+                break
 
-    def change_mail(self): self.email = input(f'Введите новую почту для контакта. Текущая - {self.email}: ')
+    def change_mail(self):
+        self.email = input(f'Введите новую почту для контакта. Текущая - {self.email}: ')
+        is_empty(self.email)
+        while True:
+            if '@' not in self.email:
+                print('Почта должна содержать в себе символ собаки')
+                self.email = input('Введите правильную почту: ')
+            else:
+                break
 
-    def change_number(self): self.number = input(f'Введите новый номер для контакта. Текущий - {self.number}: ')
+    def change_number(self):
+        self.number = input(f'Введите новый номер для контакта. Текущий - {self.number}: ')
+        is_empty(self.number)
+        while True:
+            if not self.number.isdecimal():
+                print('Номер должен состоять только из цифр')
+                self.number = input('Введите корректный номер: ')
+            else:
+                break
 
 
 # класс, отвечающий за действия со списком контактов
