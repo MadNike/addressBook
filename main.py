@@ -17,13 +17,16 @@ def is_empty(prop):
 class Contact:
 
     # Инициализация инстанции класса ( конструктор )
-    def __init__(self, name, email, number, /):
+    def __init__(self, name, last_name, email, number, /):
         self.name = name
+        self.last_name = last_name
         self.email = email
         self.number = number
 
     # Функции относящиеся к изменению данных внутри самого контакта
-    def rename(self): self.name = input(f'Введите новое имя контакту. Текущее - {self.name}: ')
+    def rename(self):
+        self.name = input(f'Введите новое имя контакту. Текущее - {self.name}: ')
+        self.last_name = input(f'Введите новую фамилию контакту. Текущяя - {self.last_name}: ')
 
     def change_mail(self): self.email = input(f'Введите новую почту для контакта. Текущая - {self.email}: ')
 
@@ -52,11 +55,11 @@ class Contacts(list):
         if not len(self) > 0:
             print('В вашем списке еще нет контактов. Для начала создайте парочку.')
         else:
-            th = ['Имя', 'Номер', 'Почта']  # инициализация столбцов
+            th = ['Имя', 'Фамилия', 'Номер', 'Почта']  # инициализация столбцов
             table = PrettyTable(th)  # создание таблицы
             # добавление данных в таблицу и вывод
             for contact in self:
-                table.add_row([contact.name, contact.number, contact.email])
+                table.add_row([contact.name, contact.last_name, contact.number, contact.email])
             print(table)
 
     # добавление контакта в список с последующим сохранением в файл
@@ -68,6 +71,14 @@ class Contacts(list):
             if not name.isalpha():
                 print('Имя не должно содержать специальных символов, пробелов или цифр')
                 name = input('Введите валидные данные: ')
+            else:
+                break
+        last_name = input('Введите фамилию контакта: ')
+        is_empty(last_name)
+        while True:
+            if not last_name.isalpha():
+                print('Фамилия не должна содержать специальных символов, пробелов или цифр')
+                last_name = input('Введите валидные данные: ')
             else:
                 break
         email = input('Введите почту контакта: ')
@@ -86,7 +97,7 @@ class Contacts(list):
                 number = input('Введите корректный номер: ')
             else:
                 break
-        new_contact = Contact(name, email, number)
+        new_contact = Contact(name, last_name, email, number)
         # self в данном случае типа list, так как мы от него наследуемся, поэтому он может использовать методы списка здесь и далее
         self.append(new_contact)
         self.save()
