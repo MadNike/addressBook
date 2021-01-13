@@ -1,6 +1,11 @@
 import os
 import pickle  # Модуль для сериализации данных
-from prettytable import PrettyTable  # Модуль для красивого вывода контактов
+try:
+	from prettytable import PrettyTable  # Модуль для красивого вывода контактов
+except:
+	print("Сначала запустите setup.bat")
+	read()
+	exit()
 
 
 # проверка строки на пустоту
